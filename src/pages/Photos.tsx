@@ -76,7 +76,7 @@ export function Photos() {
       if (fileRef.current) fileRef.current.value = ''
       setMessage(
         willReplace
-          ? 'Uploaded. The oldest photo was removed to keep 5.'
+          ? `Uploaded. The oldest photo was removed to keep ${MAX_PHOTOS}.`
           : 'Photo added.',
       )
     } catch (err) {
