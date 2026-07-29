@@ -11,6 +11,8 @@
   (case does not matter: `kalimpong` / `KALIMPONG` both work)  
   Wrong answer shows “Get out, imposter” and returns to the password page.  
   Edit `challengeQuestion` / `challengeAnswer` in `src/content/site.ts`.
+- **Session:** auto-logout after **15 minutes** (change `sessionMinutes` in `site.ts`).  
+  Home page has a **Log out** button too.
 
 ## Names & copy
 Edit `src/content/site.ts`:

@@ -76,6 +76,17 @@
   transform: translateY(-1px);
 }
 
+.hero-logout {
+  opacity: 0.92;
+}
+
+.hero-session-hint {
+  margin-top: 1.15rem;
+  font-size: 0.88rem;
+  font-weight: 300;
+  color: rgba(255, 252, 251, 0.7);
+}
+
 @media (max-width: 600px) {
   .hero {
     place-items: center;

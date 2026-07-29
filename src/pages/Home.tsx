@@ -1,8 +1,11 @@
 import { Link } from 'react-router-dom'
 import { site } from '../content/site'
+import { useAuth } from '../lib/auth'
 import './Home.css'
 
 export function Home() {
+  const { logout } = useAuth()
+
   return (
     <section className="hero">
       <div
@@ -22,7 +25,17 @@ export function Home() {
           <Link className="btn btn-ghost hero-ghost" to="/notes">
             Leave a note
           </Link>
+          <button
+            type="button"
+            className="btn btn-ghost hero-ghost hero-logout"
+            onClick={logout}
+          >
+            Log out
+          </button>
         </div>
+        <p className="hero-session-hint animate-fade-up delay-3">
+          Session ends automatically after {site.sessionMinutes} minutes.
+        </p>
       </div>
     </section>
   )

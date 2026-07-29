@@ -23,6 +23,10 @@ export const site = {
   authStorageKey: 'gift-site-unlocked',
   /** Session key after the favorite-place challenge */
   challengeStorageKey: 'gift-site-challenge-ok',
+  /** Auto-logout after this many minutes */
+  sessionMinutes: 15,
+  /** sessionStorage key for absolute session expiry timestamp */
+  sessionExpiresKey: 'gift-site-session-expires',
 } as const
 
 /** Nav / future sections — add a route here when you add a new page */
