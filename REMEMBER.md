@@ -14,6 +14,19 @@
 - **Session:** auto-logout after **15 minutes** (change `sessionMinutes` in `site.ts`).  
   Home page has a **Log out** button too.
 
+## Google search (“miss you jaanu”)
+SEO pages/meta are set so Google *can* index the phrase, but ranking is **not guaranteed** and can take days/weeks.
+
+1. Open [Google Search Console](https://search.google.com/search-console)
+2. Add property: `https://gift-for-mansha.vercel.app`
+3. Verify (HTML tag or other method Google offers)
+4. Submit sitemap: `https://gift-for-mansha.vercel.app/sitemap.xml`
+5. Request indexing for:
+   - `https://gift-for-mansha.vercel.app/`
+   - `https://gift-for-mansha.vercel.app/miss-you-jaanu.html`
+
+**Note:** Google *autocomplete suggestions* (dropdown while typing) cannot be forced for a private gift site. That only appears when many people search the same words. What we can aim for is the site showing in **search results** for “miss you jaanu”.
+
 ## Names & copy
 Edit `src/content/site.ts`:
 - `brand` — hero title (e.g. For Mansha)

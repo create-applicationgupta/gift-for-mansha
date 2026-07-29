@@ -48,7 +48,9 @@ export default function App() {
   }, [])
 
   useEffect(() => {
-    document.title = fullyUnlocked ? site.brand : site.gateBrand
+    document.title = fullyUnlocked
+      ? site.brand
+      : `${site.seoPhrase} — ${site.gateBrand}`
   }, [fullyUnlocked])
 
   useEffect(() => {

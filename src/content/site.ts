@@ -1,6 +1,8 @@
 /** Edit these to personalize your gift site */
 
 export const site = {
+  /** SEO / romantic search phrase shown on the public gate */
+  seoPhrase: 'Miss you jaanu',
   /** Shown only after both gates are passed (home, nav, etc.) */
   brand: 'For Mansha',
   /** Shown on password / challenge screens before unlock */
