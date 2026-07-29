@@ -12,7 +12,7 @@ import {
 } from 'firebase/firestore'
 import { getDb, isFirebaseConfigured } from './firebase'
 
-export const MAX_PHOTOS = 15
+export const MAX_PHOTOS = 30
 /** Keep well under Firestore's 1 MB document limit */
 const MAX_DATA_URL_CHARS = 900_000
 const MAX_EDGE = 1280

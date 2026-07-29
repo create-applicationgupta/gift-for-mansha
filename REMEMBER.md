@@ -19,8 +19,8 @@ Edit `src/content/site.ts`:
 Do **not** upgrade to Blaze / paid plan. Firebase Storage now asks for money; this site stores photos in **Firestore only** (Spark free).
 
 On the Photos page you can upload from the browser:
-- Max **15** photos
-- Uploading a 16th removes the **oldest** automatically
+- Max **30** photos
+- Uploading a 31st removes the **oldest** automatically
 - Photos are compressed in the browser before saving (stays free)
 
 ### Firestore rules (notes + photos) — Publish these

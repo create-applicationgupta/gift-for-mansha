@@ -31,13 +31,13 @@ Browser (Mansha / you)
     │
     └─ Firestore reads/writes
            ├─ collection: notes   (love notes)
-           └─ collection: photos  (up to 15 images as compressed data)
+           └─ collection: photos  (up to 30 images as compressed data)
 ```
 
 1. Visitor opens the Vercel URL.
 2. Password gate unlocks the SPA (session only, in that browser).
 3. Love notes and photos load from Firestore using the `VITE_FIREBASE_*` keys baked into the frontend build.
-4. Uploading a photo compresses it in the browser, then saves it to Firestore. If there are already 15, the oldest document is deleted first.
+4. Uploading a photo compresses it in the browser, then saves it to Firestore. If there are already 30, the oldest document is deleted first.
 
 ---
 
@@ -307,7 +307,7 @@ npx vercel --prod --yes
 1. Open https://gift-for-mansha.vercel.app
 2. Enter password from `src/content/site.ts`
 3. **Love notes:** leave a note → open on another device → should appear
-4. **Photos:** upload an image → should show in the grid; 16th upload removes oldest
+4. **Photos:** upload an image → should show in the grid; 31st upload removes oldest
 5. Pink “Firebase is not configured” banners should **not** appear if env vars are correct
 
 Hard refresh if something looks cached: **Ctrl+Shift+R**
@@ -346,7 +346,7 @@ Update `.env` locally + Vercel env vars → redeploy Vercel.
 | `.env` / `.env.example` | Firebase web config (local) |
 | `src/lib/firebase.ts` | Initializes Firestore from env |
 | `src/lib/notes.ts` | Love notes read/write |
-| `src/lib/photos.ts` | Photo compress + upload + 15-cap rotation |
+| `src/lib/photos.ts` | Photo compress + upload + 30-cap rotation |
 | `src/content/site.ts` | Brand, names, password |
 | `firestore.rules` | Rules to paste into Firebase |
 | `REMEMBER.md` | Short cheat sheet |
