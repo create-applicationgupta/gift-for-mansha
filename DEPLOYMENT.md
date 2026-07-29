@@ -14,7 +14,7 @@ This document explains **exactly how this app was built, configured, and deploye
 | Love notes + photos data | Firebase Firestore (Spark) | Free |
 | Site unlock | Shared password in `src/content/site.ts` | — |
 
-**Live URL:** https://gift-for-mansha.vercel.app  
+**Live URL:** https://gift-for-special.vercel.app  
 **GitHub:** https://github.com/create-applicationgupta/gift-for-mansha  
 **Firebase project ID:** `gift-for-mansha`
 
@@ -156,7 +156,7 @@ File [`vercel.json`](vercel.json) rewrites all paths to `index.html` so React Ro
 
 - Original project name: `gift-for-mansha`
 - Renamed with: `npx vercel project rename gift-for-mansha gift`
-- **Primary alias that still works:** https://gift-for-mansha.vercel.app
+- **Primary alias that still works:** https://gift-for-special.vercel.app
 - Also available after rename: https://gift-love-a6d4.vercel.app
 - **`https://gift.vercel.app` is taken globally** — cannot be claimed
 
@@ -304,7 +304,7 @@ npx vercel --prod --yes
 
 ## Step 6 — Verify the live site
 
-1. Open https://gift-for-mansha.vercel.app
+1. Open https://gift-for-special.vercel.app
 2. Enter password from `src/content/site.ts`
 3. **Love notes:** leave a note → open on another device → should appear
 4. **Photos:** upload an image → should show in the grid; 31st upload removes oldest
@@ -362,7 +362,7 @@ Update `.env` locally + Vercel env vars → redeploy Vercel.
 | Notes work, photos fail with permissions | Firestore rules missing `photos` match | Publish full rules from `firestore.rules` |
 | `/photos` 404 on refresh | Missing SPA rewrite | Ensure `vercel.json` is deployed |
 | Storage asks for money | Expected | Ignore Storage; use Firestore photo upload |
-| `gift.vercel.app` unavailable | Alias already taken | Use `gift-for-mansha.vercel.app` or another free name |
+| `gift.vercel.app` unavailable | Alias already taken | Use `gift-for-special.vercel.app` or another free name |
 | Old password still required after change | Forgot to redeploy | Change `site.ts` → rebuild/redeploy |
 
 ---
@@ -387,4 +387,4 @@ Update `.env` locally + Vercel env vars → redeploy Vercel.
 - [x] Firestore rules for `notes` + `photos`
 - [x] Photos without paid Storage (compressed into Firestore)
 - [x] SPA rewrites via `vercel.json`
-- [x] Live at https://gift-for-mansha.vercel.app
+- [x] Live at https://gift-for-special.vercel.app

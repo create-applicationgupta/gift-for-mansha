@@ -1,7 +1,7 @@
 # Gift for Mansha — things to remember
 
 ## Live site
-- **URL:** https://gift-for-mansha.vercel.app  
+- **URL:** https://gift-for-special.vercel.app  
   (also works: https://gift-love-a6d4.vercel.app — project renamed to `gift`)  
   Note: `https://gift.vercel.app` is already taken by someone else on Vercel and cannot be used.
 - **GitHub:** https://github.com/create-applicationgupta/gift-for-mansha
@@ -18,11 +18,11 @@
 SEO pages/meta target this unique phrase so it has a better chance to rank.
 
 1. Open [Google Search Console](https://search.google.com/search-console)
-2. Property: `https://gift-for-mansha.vercel.app`
-3. Sitemap: `https://gift-for-mansha.vercel.app/sitemap.xml`
+2. Property: `https://gift-for-special.vercel.app`
+3. Sitemap: `https://gift-for-special.vercel.app/sitemap.xml`
 4. Request indexing for:
-   - `https://gift-for-mansha.vercel.app/`
-   - `https://gift-for-mansha.vercel.app/the-kalimpong-gift-portal.html`
+   - `https://gift-for-special.vercel.app/`
+   - `https://gift-for-special.vercel.app/the-kalimpong-gift-portal.html`
 
 Search for: **The Kalimpong Gift Portal**
 
