@@ -94,20 +94,22 @@ export function Notes() {
           />
         </div>
 
-        <label className="notes-heart">
-          <input
-            type="checkbox"
-            checked={heart}
-            onChange={(e) => setHeart(e.target.checked)}
-          />
-          Add a little heart
-        </label>
+        <div className="notes-actions">
+          <label className="notes-heart">
+            <input
+              type="checkbox"
+              checked={heart}
+              onChange={(e) => setHeart(e.target.checked)}
+            />
+            <span>Add a little heart</span>
+          </label>
 
-        {error && <p className="notes-error">{error}</p>}
+          {error && <p className="notes-error">{error}</p>}
 
-        <button className="btn" type="submit" disabled={saving || !text.trim()}>
-          {saving ? 'Sending…' : 'Leave note'}
-        </button>
+          <button className="btn" type="submit" disabled={saving || !text.trim()}>
+            {saving ? 'Sending…' : 'Leave note'}
+          </button>
+        </div>
       </form>
 
       <div className="notes-list" aria-live="polite">
