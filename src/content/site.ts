@@ -14,8 +14,13 @@ export const site = {
    * Change this before sharing the link.
    */
   password: 'oursecret',
+  /** Second gate — favorite place (checked case-insensitively) */
+  challengeQuestion: 'What is your favorite place?',
+  challengeAnswer: 'Kalimpong',
   /** Session key for remembering unlock in this browser */
   authStorageKey: 'gift-site-unlocked',
+  /** Session key after the favorite-place challenge */
+  challengeStorageKey: 'gift-site-challenge-ok',
 } as const
 
 /** Nav / future sections — add a route here when you add a new page */

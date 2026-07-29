@@ -7,6 +7,10 @@
 - **GitHub:** https://github.com/create-applicationgupta/gift-for-mansha
 - **Unlock password:** set in `src/content/site.ts` → `password`  
   (current default: `oursecret` — change it anytime, then redeploy)
+- **Second gate:** favorite place question → answer must be `Kalimpong`  
+  (case does not matter: `kalimpong` / `KALIMPONG` both work)  
+  Wrong answer shows “Get out, imposter” and returns to the password page.  
+  Edit `challengeQuestion` / `challengeAnswer` in `src/content/site.ts`.
 
 ## Names & copy
 Edit `src/content/site.ts`:

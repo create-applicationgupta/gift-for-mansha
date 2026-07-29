@@ -1,0 +1,12 @@
+.challenge-title {
+  font-size: clamp(2.4rem, 7vw, 3.2rem);
+}
+
+.challenge-fail-title {
+  color: var(--blush-deep);
+  font-size: clamp(2.4rem, 7vw, 3.2rem);
+}
+
+.challenge-fail .gate-lead {
+  margin-bottom: 0;
+}
