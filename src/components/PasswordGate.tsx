@@ -28,7 +28,8 @@ export function PasswordGate({ onUnlock }: Props) {
         <p className="gate-eyebrow">{site.seoPhrase}</p>
         <h1 className="gate-title">{site.gateBrand}</h1>
         <p className="gate-lead">
-          Miss you jaanu — enter the little password we share.
+          Welcome to The Kalimpong Gift Portal — enter the little password we
+          share.
         </p>
         <label className="sr-only" htmlFor="site-password">
           Password
