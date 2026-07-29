@@ -1,8 +1,10 @@
 /** Edit these to personalize your gift site */
 
 export const site = {
-  /** Couple / gift title shown as the brand */
+  /** Shown only after both gates are passed (home, nav, etc.) */
   brand: 'For Mansha',
+  /** Shown on password / challenge screens before unlock */
+  gateBrand: 'Our Personal Space',
   /** Short line under the brand on the home hero */
   tagline: 'A quiet place made just for us — our photos, our words.',
   /** Your name (shown in love notes author picker) */

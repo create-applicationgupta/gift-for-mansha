@@ -58,7 +58,7 @@ export function ChallengeGate({ onPass, onFail }: Props) {
       <div className="atmosphere" aria-hidden="true" />
       <form className="gate-panel animate-fade-up" onSubmit={handleSubmit}>
         <p className="gate-eyebrow">One more thing</p>
-        <h1 className="gate-title challenge-title">Prove it&apos;s you</h1>
+        <h1 className="gate-title challenge-title">{site.gateBrand}</h1>
         <p className="gate-lead">{site.challengeQuestion}</p>
         <label className="sr-only" htmlFor="favorite-place">
           Favorite place

@@ -26,7 +26,7 @@ export function PasswordGate({ onUnlock }: Props) {
       <div className="atmosphere" aria-hidden="true" />
       <form className="gate-panel animate-fade-up" onSubmit={handleSubmit}>
         <p className="gate-eyebrow">A private corner</p>
-        <h1 className="gate-title">{site.brand}</h1>
+        <h1 className="gate-title">{site.gateBrand}</h1>
         <p className="gate-lead">Enter the little password we share.</p>
         <label className="sr-only" htmlFor="site-password">
           Password

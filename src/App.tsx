@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ChallengeGate } from './components/ChallengeGate'
 import { Layout } from './components/Layout'
@@ -19,6 +19,12 @@ function isChallengeOk(): boolean {
 export default function App() {
   const [passwordOk, setPasswordOk] = useState(isPasswordOk)
   const [challengeOk, setChallengeOk] = useState(isChallengeOk)
+
+  const fullyUnlocked = passwordOk && challengeOk
+
+  useEffect(() => {
+    document.title = fullyUnlocked ? site.brand : site.gateBrand
+  }, [fullyUnlocked])
 
   const handleChallengeFail = useCallback(() => {
     sessionStorage.removeItem(site.authStorageKey)
