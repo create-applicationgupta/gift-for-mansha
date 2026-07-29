@@ -7,8 +7,8 @@
 - **GitHub:** https://github.com/create-applicationgupta/gift-for-mansha
 - **Unlock password:** set in `src/content/site.ts` → `password`  
   (current default: `oursecret` — change it anytime, then redeploy)
-- **Second gate:** favorite place question → answer must be `Kalimpong`  
-  (case does not matter: `kalimpong` / `KALIMPONG` both work)  
+- **Second gate:** favorite place question → answer must be `NIT Warangal`  
+  (case does not matter: `nit warangal` / `NIT WARANGAL` both work)  
   Wrong answer shows “Get out, imposter” and returns to the password page.  
   Edit `challengeQuestion` / `challengeAnswer` in `src/content/site.ts`.
 - **Session:** auto-logout after **15 minutes** (change `sessionMinutes` in `site.ts`).  

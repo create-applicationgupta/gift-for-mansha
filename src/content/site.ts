@@ -20,7 +20,7 @@ export const site = {
   password: 'oursecret',
   /** Second gate — favorite place (checked case-insensitively) */
   challengeQuestion: 'What is your favorite place?',
-  challengeAnswer: 'Kalimpong',
+  challengeAnswer: 'NIT Warangal',
   /** Session key for remembering unlock in this browser */
   authStorageKey: 'gift-site-unlocked',
   /** Session key after the favorite-place challenge */
