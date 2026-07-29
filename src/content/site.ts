@@ -6,7 +6,7 @@ export const site = {
   /** Short line under the brand on the home hero */
   tagline: 'A quiet place made just for us — our photos, our words.',
   /** Your name (shown in love notes author picker) */
-  yourName: 'You',
+  yourName: 'Tutul',
   /** Her name (shown in love notes author picker) */
   herName: 'Mansha',
   /**
