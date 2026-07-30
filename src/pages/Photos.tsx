@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useId, useRef, useState, type FormEvent } from 'react'
 import {
   fetchGalleryPhotos,
   isFirebaseConfigured,
@@ -18,19 +18,35 @@ function formatPhotoDate(date: Date) {
 }
 
 function HeartIcon({ filled }: { filled: boolean }) {
+  const gradId = useId().replace(/:/g, '')
   return (
     <svg
       className="photo-heart-icon"
       viewBox="0 0 24 24"
-      width="22"
-      height="22"
+      width="20"
+      height="20"
       aria-hidden="true"
     >
+      <defs>
+        <linearGradient
+          id={gradId}
+          x1="4"
+          y1="3"
+          x2="18"
+          y2="21"
+          gradientUnits="userSpaceOnUse"
+        >
+          <stop stopColor="#f2a0ab" />
+          <stop offset="0.55" stopColor="#e45d72" />
+          <stop offset="1" stopColor="#c43d55" />
+        </linearGradient>
+      </defs>
       <path
-        d="M12 21s-6.7-4.35-9.33-7.4C.8 11.5.5 8.4 2.4 6.4A4.6 4.6 0 0 1 6.9 5c1.5 0 2.8.7 3.6 1.8C11.3 5.7 12.6 5 14.1 5a4.6 4.6 0 0 1 4.5 1.4c1.9 2 1.6 5.1-.27 7.2C18.7 16.65 12 21 12 21z"
-        fill={filled ? 'currentColor' : 'none'}
-        stroke="currentColor"
-        strokeWidth="1.7"
+        className="photo-heart-path"
+        d="M12 20.4c-.4 0-.8-.15-1.1-.45C7.4 16.55 4.2 13.75 2.7 11.5 1.3 9.4 1.45 6.7 3.2 5.1A4.35 4.35 0 0 1 6.9 4c1.35 0 2.55.55 3.4 1.5L12 7.35l1.7-1.85A4.5 4.5 0 0 1 17.1 4c1.45 0 2.8.55 3.7 1.5 1.75 1.6 1.9 4.3.5 6.4-1.5 2.25-4.7 5.05-8.2 8.45-.3.3-.7.45-1.1.45Z"
+        fill={filled ? `url(#${gradId})` : 'rgba(255, 255, 255, 0.35)'}
+        stroke={filled ? '#c43d55' : '#e07a8a'}
+        strokeWidth="1.35"
         strokeLinejoin="round"
       />
     </svg>
