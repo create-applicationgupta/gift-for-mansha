@@ -3,16 +3,46 @@ import {
   fetchGalleryPhotos,
   isFirebaseConfigured,
   MAX_PHOTOS,
+  togglePhotoLike,
   uploadGalleryPhoto,
   type GalleryPhoto,
 } from '../lib/photos'
 import './Photos.css'
+
+function formatPhotoDate(date: Date) {
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+  })
+}
+
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg
+      className="photo-heart-icon"
+      viewBox="0 0 24 24"
+      width="22"
+      height="22"
+      aria-hidden="true"
+    >
+      <path
+        d="M12 21s-6.7-4.35-9.33-7.4C.8 11.5.5 8.4 2.4 6.4A4.6 4.6 0 0 1 6.9 5c1.5 0 2.8.7 3.6 1.8C11.3 5.7 12.6 5 14.1 5a4.6 4.6 0 0 1 4.5 1.4c1.9 2 1.6 5.1-.27 7.2C18.7 16.65 12 21 12 21z"
+        fill={filled ? 'currentColor' : 'none'}
+        stroke="currentColor"
+        strokeWidth="1.7"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 export function Photos() {
   const [photos, setPhotos] = useState<GalleryPhoto[]>([])
   const [active, setActive] = useState<number | null>(null)
   const [loading, setLoading] = useState(true)
   const [uploading, setUploading] = useState(false)
+  const [likingId, setLikingId] = useState<string | null>(null)
   const [caption, setCaption] = useState('')
   const [error, setError] = useState<string | null>(null)
   const [message, setMessage] = useState<string | null>(null)
@@ -90,6 +120,27 @@ export function Photos() {
     }
   }
 
+  async function handleLike(photo: GalleryPhoto) {
+    if (!online || likingId) return
+    const nextLiked = !photo.liked
+    setLikingId(photo.id)
+    setPhotos((prev) =>
+      prev.map((p) => (p.id === photo.id ? { ...p, liked: nextLiked } : p)),
+    )
+    try {
+      await togglePhotoLike(photo.id, nextLiked)
+    } catch {
+      setPhotos((prev) =>
+        prev.map((p) =>
+          p.id === photo.id ? { ...p, liked: photo.liked } : p,
+        ),
+      )
+      setError('Could not save like. Check Firestore rules and try again.')
+    } finally {
+      setLikingId(null)
+    }
+  }
+
   const current = active !== null ? photos[active] : null
 
   return (
@@ -155,16 +206,37 @@ export function Photos() {
 
       <div className="photo-grid">
         {photos.map((photo, index) => (
-          <button
+          <div
             key={photo.id}
-            type="button"
             className={`photo-tile animate-fade-up delay-${(index % 3) + 1}`}
-            onClick={() => setActive(index)}
-            aria-label={`Open photo: ${photo.caption}`}
           >
-            <img src={photo.src} alt={photo.alt} loading="lazy" />
-            <span className="photo-caption">{photo.caption}</span>
-          </button>
+            <button
+              type="button"
+              className="photo-tile-open"
+              onClick={() => setActive(index)}
+              aria-label={`Open photo: ${photo.caption}`}
+            >
+              <img src={photo.src} alt={photo.alt} loading="lazy" />
+            </button>
+            <button
+              type="button"
+              className={`photo-like${photo.liked ? ' is-liked' : ''}`}
+              onClick={() => handleLike(photo)}
+              disabled={!online || likingId === photo.id}
+              aria-label={photo.liked ? 'Unlike photo' : 'Like photo'}
+              aria-pressed={photo.liked}
+            >
+              <HeartIcon filled={photo.liked} />
+            </button>
+            <div className="photo-meta">
+              <span className="photo-caption">{photo.caption}</span>
+              {photo.createdAt && (
+                <time dateTime={photo.createdAt.toISOString()}>
+                  {formatPhotoDate(photo.createdAt)}
+                </time>
+              )}
+            </div>
+          </div>
         ))}
       </div>
 
@@ -189,7 +261,26 @@ export function Photos() {
             onClick={(e) => e.stopPropagation()}
           >
             <img src={current.src} alt={current.alt} />
-            <figcaption>{current.caption}</figcaption>
+            <figcaption>
+              <span className="lightbox-caption-row">
+                <span>{current.caption}</span>
+                <button
+                  type="button"
+                  className={`photo-like lightbox-like${current.liked ? ' is-liked' : ''}`}
+                  onClick={() => handleLike(current)}
+                  disabled={!online || likingId === current.id}
+                  aria-label={current.liked ? 'Unlike photo' : 'Like photo'}
+                  aria-pressed={current.liked}
+                >
+                  <HeartIcon filled={current.liked} />
+                </button>
+              </span>
+              {current.createdAt && (
+                <time dateTime={current.createdAt.toISOString()}>
+                  {formatPhotoDate(current.createdAt)}
+                </time>
+              )}
+            </figcaption>
           </figure>
         </div>
       )}

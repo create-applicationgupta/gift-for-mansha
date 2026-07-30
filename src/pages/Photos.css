@@ -77,14 +77,19 @@
 
 .photo-tile {
   position: relative;
+  overflow: hidden;
+  border-radius: var(--radius);
+  aspect-ratio: 4 / 5;
+}
+
+.photo-tile-open {
+  display: block;
+  width: 100%;
+  height: 100%;
   padding: 0;
   border: 0;
   background: transparent;
   cursor: pointer;
-  overflow: hidden;
-  border-radius: var(--radius);
-  text-align: left;
-  aspect-ratio: 4 / 5;
 }
 
 .photo-tile img {
@@ -98,17 +103,83 @@
   transform: scale(1.04);
 }
 
-.photo-caption {
+.photo-like {
+  position: absolute;
+  top: 0.7rem;
+  right: 0.7rem;
+  z-index: 2;
+  display: grid;
+  place-items: center;
+  width: 2.4rem;
+  height: 2.4rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(255, 252, 251, 0.88);
+  color: #c45b6a;
+  cursor: pointer;
+  box-shadow: 0 1px 6px rgba(44, 36, 34, 0.18);
+  transition:
+    transform 0.2s var(--ease-out),
+    color 0.2s ease,
+    background 0.2s ease;
+}
+
+.photo-like:hover:not(:disabled) {
+  transform: scale(1.08);
+  color: #d6455a;
+}
+
+.photo-like:disabled {
+  opacity: 0.65;
+  cursor: default;
+}
+
+.photo-like.is-liked {
+  color: #e11d48;
+  background: rgba(255, 241, 244, 0.95);
+}
+
+.photo-like.is-liked .photo-heart-icon {
+  animation: heartPop 0.35s var(--ease-out);
+}
+
+@keyframes heartPop {
+  0% {
+    transform: scale(1);
+  }
+  45% {
+    transform: scale(1.22);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.photo-meta {
   position: absolute;
   left: 0;
   right: 0;
   bottom: 0;
-  padding: 2.5rem 1rem 1rem;
-  background: linear-gradient(transparent, rgba(44, 36, 34, 0.7));
+  padding: 2.5rem 1rem 0.9rem;
+  background: linear-gradient(transparent, rgba(44, 36, 34, 0.72));
   color: var(--white);
+  pointer-events: none;
+}
+
+.photo-caption {
+  display: block;
   font-family: var(--font-display);
   font-size: 1.15rem;
   font-style: italic;
+}
+
+.photo-meta time {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.03em;
+  opacity: 0.85;
 }
 
 .lightbox {
@@ -140,9 +211,31 @@
   margin-top: 1rem;
   text-align: center;
   color: var(--white);
+}
+
+.lightbox-caption-row {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.65rem;
   font-family: var(--font-display);
   font-size: 1.35rem;
   font-style: italic;
+}
+
+.lightbox-figure figcaption time {
+  display: block;
+  margin-top: 0.4rem;
+  font-size: 0.88rem;
+  letter-spacing: 0.03em;
+  opacity: 0.8;
+}
+
+.lightbox-like {
+  position: static;
+  width: 2.2rem;
+  height: 2.2rem;
+  flex-shrink: 0;
 }
 
 .lightbox-close {

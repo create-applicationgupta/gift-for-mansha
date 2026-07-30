@@ -8,6 +8,7 @@ import {
   orderBy,
   query,
   serverTimestamp,
+  updateDoc,
   type Timestamp,
 } from 'firebase/firestore'
 import { getDb, isFirebaseConfigured } from './firebase'
@@ -23,6 +24,7 @@ export type GalleryPhoto = {
   src: string
   caption: string
   alt: string
+  liked: boolean
   createdAt: Date | null
 }
 
@@ -30,6 +32,7 @@ type PhotoDoc = {
   imageData: string
   caption?: string
   alt?: string
+  liked?: boolean
   createdAt?: Timestamp | null
 }
 
@@ -90,9 +93,21 @@ export async function fetchGalleryPhotos(): Promise<GalleryPhoto[]> {
       src: data.imageData,
       caption,
       alt: data.alt?.trim() || caption,
+      liked: Boolean(data.liked),
       createdAt: data.createdAt?.toDate?.() ?? null,
     }
   })
+}
+
+export async function togglePhotoLike(
+  photoId: string,
+  liked: boolean,
+): Promise<void> {
+  const db = getDb()
+  if (!db || !isFirebaseConfigured()) {
+    throw new Error('Firebase is not configured.')
+  }
+  await updateDoc(doc(db, 'photos', photoId), { liked })
 }
 
 async function removeOldestPhoto(): Promise<void> {
@@ -133,6 +148,7 @@ export async function uploadGalleryPhoto(input: {
     imageData,
     caption,
     alt: caption,
+    liked: false,
     createdAt: serverTimestamp(),
   })
 
@@ -141,6 +157,7 @@ export async function uploadGalleryPhoto(input: {
     src: imageData,
     caption,
     alt: caption,
+    liked: false,
     createdAt: new Date(),
   }
 }
