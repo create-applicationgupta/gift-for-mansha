@@ -97,6 +97,7 @@
 .note-meta {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   gap: 1rem;
   margin-bottom: 0.55rem;
   font-size: 0.9rem;
@@ -109,9 +110,48 @@
   color: var(--accent);
 }
 
+.note-meta-end {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.55rem;
+  flex-shrink: 0;
+}
+
 .note-meta time {
   color: var(--ink-muted);
   white-space: nowrap;
+}
+
+.note-delete {
+  display: grid;
+  place-items: center;
+  width: 1.85rem;
+  height: 1.85rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-muted);
+  cursor: pointer;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.2s var(--ease-out);
+}
+
+.note-delete:hover:not(:disabled) {
+  color: var(--blush-deep);
+  background: var(--accent-soft);
+  transform: scale(1.06);
+}
+
+.note-delete:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+
+.note-delete-icon {
+  display: block;
 }
 
 .note-text {

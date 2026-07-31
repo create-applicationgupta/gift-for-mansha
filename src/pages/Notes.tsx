@@ -2,11 +2,33 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { site } from '../content/site'
 import {
   createNote,
+  deleteNote,
   fetchNotes,
   isFirebaseConfigured,
   type LoveNote,
 } from '../lib/notes'
 import './Notes.css'
+
+function TrashIcon() {
+  return (
+    <svg
+      className="note-delete-icon"
+      viewBox="0 0 24 24"
+      width="16"
+      height="16"
+      aria-hidden="true"
+    >
+      <path
+        d="M9 4.5h6M5.5 7h13M9.5 7v10.5a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7M10.5 10.5v5M13.5 10.5v5"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.5"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  )
+}
 
 export function Notes() {
   const [notes, setNotes] = useState<LoveNote[]>([])
@@ -15,6 +37,7 @@ export function Notes() {
   const [heart, setHeart] = useState(true)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
   const online = isFirebaseConfigured()
 
@@ -50,6 +73,25 @@ export function Notes() {
       setError('Could not save that note. Please try again.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  async function handleDelete(note: LoveNote) {
+    if (note.author !== site.yourName || deletingId) return
+    const ok = window.confirm('Delete this note? This cannot be undone.')
+    if (!ok) return
+
+    setDeletingId(note.id)
+    setError(null)
+    const previous = notes
+    setNotes((prev) => prev.filter((n) => n.id !== note.id))
+    try {
+      await deleteNote(note.id)
+    } catch {
+      setNotes(previous)
+      setError('Could not delete that note. Check Firestore rules and try again.')
+    } finally {
+      setDeletingId(null)
     }
   }
 
@@ -127,15 +169,29 @@ export function Notes() {
                 {note.author}
                 {note.heart ? ' ♡' : ''}
               </span>
-              {note.createdAt && (
-                <time dateTime={note.createdAt.toISOString()}>
-                  {note.createdAt.toLocaleDateString(undefined, {
-                    month: 'short',
-                    day: 'numeric',
-                    year: 'numeric',
-                  })}
-                </time>
-              )}
+              <span className="note-meta-end">
+                {note.createdAt && (
+                  <time dateTime={note.createdAt.toISOString()}>
+                    {note.createdAt.toLocaleDateString(undefined, {
+                      month: 'short',
+                      day: 'numeric',
+                      year: 'numeric',
+                    })}
+                  </time>
+                )}
+                {note.author === site.yourName && (
+                  <button
+                    type="button"
+                    className="note-delete"
+                    onClick={() => handleDelete(note)}
+                    disabled={deletingId === note.id}
+                    aria-label="Delete this note"
+                    title="Delete note"
+                  >
+                    <TrashIcon />
+                  </button>
+                )}
+              </span>
             </header>
             <p className="note-text">{note.text}</p>
           </article>

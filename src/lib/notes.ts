@@ -1,6 +1,8 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
+  doc,
   getDocs,
   orderBy,
   query,
@@ -101,6 +103,16 @@ export async function createNote(input: {
     heart: input.heart,
     createdAt: new Date(),
   }
+}
+
+export async function deleteNote(noteId: string): Promise<void> {
+  const db = getDb()
+  if (!db || !isFirebaseConfigured()) {
+    writeLocalNotes(readLocalNotes().filter((n) => n.id !== noteId))
+    return
+  }
+
+  await deleteDoc(doc(db, 'notes', noteId))
 }
 
 export { isFirebaseConfigured }
