@@ -36,7 +36,6 @@ function DeleteIcon() {
 export function Notes() {
   const { user, canDeleteNotes } = useAuth()
   const [notes, setNotes] = useState<LoveNote[]>([])
-  const [author, setAuthor] = useState<string>(user)
   const [text, setText] = useState('')
   const [heart, setHeart] = useState(true)
   const [loading, setLoading] = useState(true)
@@ -48,10 +47,6 @@ export function Notes() {
   const textRef = useRef<HTMLTextAreaElement>(null)
   const emojiWrapRef = useRef<HTMLDivElement>(null)
   const online = isFirebaseConfigured()
-
-  useEffect(() => {
-    setAuthor(user)
-  }, [user])
 
   useEffect(() => {
     let cancelled = false
@@ -116,7 +111,7 @@ export function Notes() {
     setError(null)
     setEmojiOpen(false)
     try {
-      const note = await createNote({ author, text: trimmed, heart })
+      const note = await createNote({ author: user, text: trimmed, heart })
       setNotes((prev) => [note, ...prev])
       setText('')
     } catch {
@@ -164,15 +159,8 @@ export function Notes() {
 
       <form className="notes-form animate-fade-up delay-2" onSubmit={handleSubmit}>
         <div className="notes-form-row">
-          <label htmlFor="note-author">From</label>
-          <select
-            id="note-author"
-            value={author}
-            onChange={(e) => setAuthor(e.target.value)}
-          >
-            <option value={site.yourName}>{site.yourName}</option>
-            <option value={site.herName}>{site.herName}</option>
-          </select>
+          <span className="notes-from-label">From</span>
+          <p className="notes-from-name">{user}</p>
         </div>
 
         <div className="notes-form-row">
