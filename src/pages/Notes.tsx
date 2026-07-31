@@ -157,13 +157,15 @@ export function Notes() {
       )}
 
       <form className="notes-form animate-fade-up delay-2" onSubmit={handleSubmit}>
-        <div className="notes-form-row">
+        <div className="notes-form-header">
           <span className="notes-from-label">From</span>
           <p className="notes-from-name">{user}</p>
         </div>
 
-        <div className="notes-form-row">
-          <label htmlFor="note-text">Note</label>
+        <div className="notes-form-body">
+          <label className="sr-only" htmlFor="note-text">
+            Note
+          </label>
           <div className="notes-composer">
             <textarea
               id="note-text"
@@ -244,26 +246,32 @@ export function Notes() {
         {!loading && notes.length === 0 && (
           <p className="notes-empty">No notes yet — be the first.</p>
         )}
-        {notes.map((note, i) => (
-          <article
-            key={note.id}
-            className={`note-item animate-fade-up delay-${(i % 3) + 1}`}
-          >
-            <header className="note-meta">
-              <span className="note-author">
-                {note.author}
-                {note.heart ? ' ♡' : ''}
-              </span>
-              <span className="note-meta-end">
-                {note.createdAt && (
-                  <time dateTime={note.createdAt.toISOString()}>
-                    {note.createdAt.toLocaleDateString(undefined, {
-                      month: 'short',
-                      day: 'numeric',
-                      year: 'numeric',
-                    })}
-                  </time>
-                )}
+        {notes.map((note, i) => {
+          const isMine = note.author === user
+          return (
+            <article
+              key={note.id}
+              className={`note-item ${isMine ? 'is-mine' : 'is-theirs'} animate-fade-up delay-${(i % 3) + 1}`}
+            >
+              <p className="note-text">{note.text}</p>
+              <footer className="note-footer">
+                <div className="note-signature">
+                  <span className="note-author">{note.author}</span>
+                  {note.heart && (
+                    <span className="note-heart-mark" aria-hidden="true">
+                      ♡
+                    </span>
+                  )}
+                  {note.createdAt && (
+                    <time dateTime={note.createdAt.toISOString()}>
+                      {note.createdAt.toLocaleDateString(undefined, {
+                        month: 'short',
+                        day: 'numeric',
+                        year: 'numeric',
+                      })}
+                    </time>
+                  )}
+                </div>
                 {canDeleteNotes && (
                   <button
                     type="button"
@@ -276,11 +284,10 @@ export function Notes() {
                     <DeleteIcon />
                   </button>
                 )}
-              </span>
-            </header>
-            <p className="note-text">{note.text}</p>
-          </article>
-        ))}
+              </footer>
+            </article>
+          )
+        })}
       </div>
     </div>
   )
