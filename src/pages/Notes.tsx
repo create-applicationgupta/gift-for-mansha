@@ -1,5 +1,6 @@
-import { useEffect, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { site } from '../content/site'
+import { emojiCategories } from '../lib/emojis'
 import {
   createNote,
   deleteNote,
@@ -8,6 +9,8 @@ import {
   type LoveNote,
 } from '../lib/notes'
 import './Notes.css'
+
+const NOTE_MAX = 600
 
 function DeleteIcon() {
   return (
@@ -38,6 +41,10 @@ export function Notes() {
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [error, setError] = useState<string | null>(null)
+  const [emojiOpen, setEmojiOpen] = useState(false)
+  const [emojiCategory, setEmojiCategory] = useState(0)
+  const textRef = useRef<HTMLTextAreaElement>(null)
+  const emojiWrapRef = useRef<HTMLDivElement>(null)
   const online = isFirebaseConfigured()
 
   useEffect(() => {
@@ -57,6 +64,43 @@ export function Notes() {
     }
   }, [])
 
+  useEffect(() => {
+    if (!emojiOpen) return
+
+    function onPointerDown(e: PointerEvent) {
+      if (!emojiWrapRef.current?.contains(e.target as Node)) {
+        setEmojiOpen(false)
+      }
+    }
+
+    function onKey(e: KeyboardEvent) {
+      if (e.key === 'Escape') setEmojiOpen(false)
+    }
+
+    document.addEventListener('pointerdown', onPointerDown)
+    window.addEventListener('keydown', onKey)
+    return () => {
+      document.removeEventListener('pointerdown', onPointerDown)
+      window.removeEventListener('keydown', onKey)
+    }
+  }, [emojiOpen])
+
+  function insertEmoji(emoji: string) {
+    const el = textRef.current
+    const start = el?.selectionStart ?? text.length
+    const end = el?.selectionEnd ?? text.length
+    const next = `${text.slice(0, start)}${emoji}${text.slice(end)}`
+    if (next.length > NOTE_MAX) return
+
+    setText(next)
+    requestAnimationFrame(() => {
+      if (!el) return
+      el.focus()
+      const caret = start + emoji.length
+      el.setSelectionRange(caret, caret)
+    })
+  }
+
   async function handleSubmit(e: FormEvent) {
     e.preventDefault()
     const trimmed = text.trim()
@@ -64,6 +108,7 @@ export function Notes() {
 
     setSaving(true)
     setError(null)
+    setEmojiOpen(false)
     try {
       const note = await createNote({ author, text: trimmed, heart })
       setNotes((prev) => [note, ...prev])
@@ -93,6 +138,8 @@ export function Notes() {
       setDeletingId(null)
     }
   }
+
+  const activeEmojis = emojiCategories[emojiCategory]?.emojis ?? []
 
   return (
     <div className="page notes-page">
@@ -124,15 +171,61 @@ export function Notes() {
 
         <div className="notes-form-row">
           <label htmlFor="note-text">Note</label>
-          <textarea
-            id="note-text"
-            rows={4}
-            maxLength={600}
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Write something soft…"
-            required
-          />
+          <div className="notes-composer">
+            <textarea
+              id="note-text"
+              ref={textRef}
+              rows={4}
+              maxLength={NOTE_MAX}
+              value={text}
+              onChange={(e) => setText(e.target.value)}
+              placeholder="Write something soft…"
+              required
+            />
+            <div className="notes-emoji-wrap" ref={emojiWrapRef}>
+              <button
+                type="button"
+                className={`notes-emoji-toggle${emojiOpen ? ' is-open' : ''}`}
+                onClick={() => setEmojiOpen((open) => !open)}
+                aria-label="Add emoji"
+                aria-expanded={emojiOpen}
+                title="Emoji"
+              >
+                😊
+              </button>
+              {emojiOpen && (
+                <div className="notes-emoji-panel" role="dialog" aria-label="Emoji picker">
+                  <div className="notes-emoji-tabs" role="tablist">
+                    {emojiCategories.map((cat, index) => (
+                      <button
+                        key={cat.id}
+                        type="button"
+                        role="tab"
+                        aria-selected={emojiCategory === index}
+                        className={`notes-emoji-tab${emojiCategory === index ? ' is-active' : ''}`}
+                        onClick={() => setEmojiCategory(index)}
+                      >
+                        {cat.label}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="notes-emoji-grid">
+                    {activeEmojis.map((emoji) => (
+                      <button
+                        key={emoji}
+                        type="button"
+                        className="notes-emoji-btn"
+                        onClick={() => insertEmoji(emoji)}
+                        aria-label={`Insert ${emoji}`}
+                      >
+                        {emoji}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="notes-actions">

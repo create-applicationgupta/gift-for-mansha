@@ -40,9 +40,132 @@
   resize: vertical;
 }
 
+.notes-composer {
+  position: relative;
+}
+
+.notes-composer textarea {
+  width: 100%;
+  padding-bottom: 2.75rem;
+}
+
 .notes-form-row select:focus,
 .notes-form-row textarea:focus {
   border-color: var(--accent);
+}
+
+.notes-emoji-wrap {
+  position: absolute;
+  right: 0.55rem;
+  bottom: 0.45rem;
+}
+
+.notes-emoji-toggle {
+  display: grid;
+  place-items: center;
+  width: 2.15rem;
+  height: 2.15rem;
+  padding: 0;
+  border: 1px solid rgba(183, 110, 121, 0.16);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.95), transparent 55%),
+    linear-gradient(160deg, rgba(255, 248, 247, 0.98), rgba(247, 236, 236, 0.85));
+  font-size: 1.05rem;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(183, 110, 121, 0.12);
+  transition:
+    transform 0.22s var(--ease-out),
+    border-color 0.22s ease,
+    box-shadow 0.22s ease;
+}
+
+.notes-emoji-toggle:hover,
+.notes-emoji-toggle.is-open {
+  transform: scale(1.06);
+  border-color: rgba(183, 110, 121, 0.35);
+  box-shadow: 0 4px 12px rgba(183, 110, 121, 0.18);
+}
+
+.notes-emoji-panel {
+  position: absolute;
+  right: 0;
+  bottom: calc(100% + 0.55rem);
+  z-index: 8;
+  width: min(19.5rem, calc(100vw - 2.5rem));
+  padding: 0.65rem;
+  border: 1px solid rgba(183, 110, 121, 0.16);
+  border-radius: 12px;
+  background:
+    linear-gradient(165deg, rgba(255, 252, 251, 0.98), rgba(255, 244, 242, 0.96));
+  box-shadow: 0 14px 36px rgba(44, 36, 34, 0.14);
+  animation: fadeUp 0.28s var(--ease-out) both;
+}
+
+.notes-emoji-tabs {
+  display: flex;
+  gap: 0.3rem;
+  margin-bottom: 0.55rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(44, 36, 34, 0.08);
+}
+
+.notes-emoji-tab {
+  flex: 1;
+  padding: 0.4rem 0.35rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink-muted);
+  font-family: var(--font-body);
+  font-size: 0.78rem;
+  letter-spacing: 0.02em;
+  cursor: pointer;
+  transition:
+    background 0.2s ease,
+    color 0.2s ease;
+}
+
+.notes-emoji-tab:hover {
+  color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.notes-emoji-tab.is-active {
+  color: var(--accent);
+  background: var(--accent-soft);
+  font-weight: 500;
+}
+
+.notes-emoji-grid {
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  gap: 0.15rem;
+  max-height: 11.5rem;
+  overflow-y: auto;
+  padding-right: 0.15rem;
+}
+
+.notes-emoji-btn {
+  display: grid;
+  place-items: center;
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  font-size: 1.25rem;
+  line-height: 1;
+  cursor: pointer;
+  transition:
+    background 0.15s ease,
+    transform 0.15s var(--ease-out);
+}
+
+.notes-emoji-btn:hover {
+  background: var(--accent-soft);
+  transform: scale(1.12);
 }
 
 .notes-heart {
