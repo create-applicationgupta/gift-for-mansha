@@ -1,9 +1,20 @@
-import { site } from '../content/site'
+import { site, type SiteUser } from '../content/site'
 
 export function clearSession() {
   sessionStorage.removeItem(site.authStorageKey)
+  sessionStorage.removeItem(site.userStorageKey)
   sessionStorage.removeItem(site.challengeStorageKey)
   sessionStorage.removeItem(site.sessionExpiresKey)
+}
+
+export function setSessionUser(user: SiteUser) {
+  sessionStorage.setItem(site.userStorageKey, user)
+}
+
+export function getSessionUser(): SiteUser | null {
+  const raw = sessionStorage.getItem(site.userStorageKey)
+  if (raw === 'Mansha' || raw === 'Tutul') return raw
+  return null
 }
 
 export function startSession() {

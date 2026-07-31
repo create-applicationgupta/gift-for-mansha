@@ -1,9 +1,10 @@
 import { useState, type FormEvent } from 'react'
-import { site } from '../content/site'
+import { resolveUserFromPassword, site, type SiteUser } from '../content/site'
+import { setSessionUser } from '../lib/session'
 import './PasswordGate.css'
 
 type Props = {
-  onUnlock: () => void
+  onUnlock: (user: SiteUser) => void
 }
 
 export function PasswordGate({ onUnlock }: Props) {
@@ -12,10 +13,12 @@ export function PasswordGate({ onUnlock }: Props) {
 
   function handleSubmit(e: FormEvent) {
     e.preventDefault()
-    if (value.trim() === site.password) {
+    const user = resolveUserFromPassword(value)
+    if (user) {
       sessionStorage.setItem(site.authStorageKey, '1')
+      setSessionUser(user)
       setError(false)
-      onUnlock()
+      onUnlock(user)
       return
     }
     setError(true)

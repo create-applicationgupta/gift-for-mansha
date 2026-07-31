@@ -3,11 +3,12 @@ import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { ChallengeGate } from './components/ChallengeGate'
 import { Layout } from './components/Layout'
 import { PasswordGate } from './components/PasswordGate'
-import { site } from './content/site'
+import { site, type SiteUser } from './content/site'
 import { AuthContext } from './lib/auth'
 import {
   clearSession,
   ensureSession,
+  getSessionUser,
   isSessionExpired,
   startSession,
 } from './lib/session'
@@ -24,27 +25,38 @@ function isChallengeOk(): boolean {
 }
 
 function readInitialAuth() {
-  if (!isPasswordOk() || !isChallengeOk()) {
-    return { passwordOk: isPasswordOk(), challengeOk: isChallengeOk() }
+  const user = getSessionUser()
+  if (!isPasswordOk() || !user) {
+    if (isPasswordOk() && !user) clearSession()
+    return {
+      passwordOk: false,
+      challengeOk: false,
+      user: null as SiteUser | null,
+    }
+  }
+  if (!isChallengeOk()) {
+    return { passwordOk: true, challengeOk: false, user }
   }
   if (isSessionExpired()) {
     clearSession()
-    return { passwordOk: false, challengeOk: false }
+    return { passwordOk: false, challengeOk: false, user: null }
   }
-  return { passwordOk: true, challengeOk: true }
+  return { passwordOk: true, challengeOk: true, user }
 }
 
 export default function App() {
   const initial = readInitialAuth()
   const [passwordOk, setPasswordOk] = useState(initial.passwordOk)
   const [challengeOk, setChallengeOk] = useState(initial.challengeOk)
+  const [user, setUser] = useState<SiteUser | null>(initial.user)
 
-  const fullyUnlocked = passwordOk && challengeOk
+  const fullyUnlocked = passwordOk && challengeOk && user !== null
 
   const logout = useCallback(() => {
     clearSession()
     setChallengeOk(false)
     setPasswordOk(false)
+    setUser(null)
   }, [])
 
   useEffect(() => {
@@ -74,14 +86,26 @@ export default function App() {
     clearSession()
     setChallengeOk(false)
     setPasswordOk(false)
+    setUser(null)
   }, [])
 
-  const authValue = useMemo(() => ({ logout }), [logout])
+  const authValue = useMemo(
+    () =>
+      user
+        ? {
+            logout,
+            user,
+            canDeleteNotes: user === site.yourName,
+          }
+        : null,
+    [logout, user],
+  )
 
-  if (!passwordOk) {
+  if (!passwordOk || !user) {
     return (
       <PasswordGate
-        onUnlock={() => {
+        onUnlock={(nextUser) => {
+          setUser(nextUser)
           setPasswordOk(true)
           const challengeReady = isChallengeOk() && !isSessionExpired()
           setChallengeOk(challengeReady)
@@ -101,6 +125,8 @@ export default function App() {
       />
     )
   }
+
+  if (!authValue) return null
 
   return (
     <AuthContext.Provider value={authValue}>

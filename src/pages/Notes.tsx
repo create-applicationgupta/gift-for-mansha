@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
 import { site } from '../content/site'
 import { emojiCategories } from '../lib/emojis'
+import { useAuth } from '../lib/auth'
 import {
   createNote,
   deleteNote,
@@ -33,8 +34,9 @@ function DeleteIcon() {
 }
 
 export function Notes() {
+  const { user, canDeleteNotes } = useAuth()
   const [notes, setNotes] = useState<LoveNote[]>([])
-  const [author, setAuthor] = useState<string>(site.yourName)
+  const [author, setAuthor] = useState<string>(user)
   const [text, setText] = useState('')
   const [heart, setHeart] = useState(true)
   const [loading, setLoading] = useState(true)
@@ -46,6 +48,10 @@ export function Notes() {
   const textRef = useRef<HTMLTextAreaElement>(null)
   const emojiWrapRef = useRef<HTMLDivElement>(null)
   const online = isFirebaseConfigured()
+
+  useEffect(() => {
+    setAuthor(user)
+  }, [user])
 
   useEffect(() => {
     let cancelled = false
@@ -121,7 +127,7 @@ export function Notes() {
   }
 
   async function handleDelete(note: LoveNote) {
-    if (note.author !== site.yourName || deletingId) return
+    if (!canDeleteNotes || note.author !== site.yourName || deletingId) return
     const ok = window.confirm('Delete this note? This cannot be undone.')
     if (!ok) return
 
@@ -271,7 +277,7 @@ export function Notes() {
                     })}
                   </time>
                 )}
-                {note.author === site.yourName && (
+                {canDeleteNotes && note.author === site.yourName && (
                   <button
                     type="button"
                     className="note-delete"

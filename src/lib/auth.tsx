@@ -1,7 +1,11 @@
 import { createContext, useContext } from 'react'
+import type { SiteUser } from '../content/site'
 
 type AuthContextValue = {
   logout: () => void
+  user: SiteUser
+  /** Only Tutul can remove his own notes */
+  canDeleteNotes: boolean
 }
 
 export const AuthContext = createContext<AuthContextValue | null>(null)

@@ -14,15 +14,20 @@ export const site = {
   /** Her name (shown in love notes author picker) */
   herName: 'Mansha',
   /**
-   * Shared password to open the site.
-   * Change this before sharing the link.
+   * First-gate passwords identify who unlocked the site.
+   * `oursecret` → Mansha · `Mansha` → Tutul
    */
-  password: 'oursecret',
+  passwords: {
+    Mansha: 'oursecret',
+    Tutul: 'Mansha',
+  },
   /** Second gate — favorite place (checked case-insensitively) */
   challengeQuestion: 'What is your favorite place?',
   challengeAnswer: 'NIT Warangal',
   /** Session key for remembering unlock in this browser */
   authStorageKey: 'gift-site-unlocked',
+  /** Session key for who unlocked (Mansha or Tutul) */
+  userStorageKey: 'gift-site-user',
   /** Session key after the favorite-place challenge */
   challengeStorageKey: 'gift-site-challenge-ok',
   /** Auto-logout after this many minutes */
@@ -31,6 +36,8 @@ export const site = {
   sessionExpiresKey: 'gift-site-session-expires',
 } as const
 
+export type SiteUser = keyof typeof site.passwords
+
 /** Nav / future sections — add a route here when you add a new page */
 export const sections = [
   { path: '/', label: 'Home', id: 'home' },
@@ -38,3 +45,10 @@ export const sections = [
   { path: '/notes', label: 'Love notes', id: 'notes' },
   // { path: '/timeline', label: 'Timeline', id: 'timeline' },
 ] as const
+
+export function resolveUserFromPassword(input: string): SiteUser | null {
+  const trimmed = input.trim()
+  if (trimmed === site.passwords.Mansha) return 'Mansha'
+  if (trimmed === site.passwords.Tutul) return 'Tutul'
+  return null
+}
