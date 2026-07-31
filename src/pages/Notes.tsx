@@ -9,22 +9,21 @@ import {
 } from '../lib/notes'
 import './Notes.css'
 
-function TrashIcon() {
+function DeleteIcon() {
   return (
     <svg
       className="note-delete-icon"
       viewBox="0 0 24 24"
-      width="16"
-      height="16"
+      width="14"
+      height="14"
       aria-hidden="true"
     >
       <path
-        d="M9 4.5h6M5.5 7h13M9.5 7v10.5a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1V7M10.5 10.5v5M13.5 10.5v5"
+        d="M7.5 7.5 16.5 16.5M16.5 7.5 7.5 16.5"
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.5"
+        strokeWidth="1.85"
         strokeLinecap="round"
-        strokeLinejoin="round"
       />
     </svg>
   )
@@ -185,10 +184,10 @@ export function Notes() {
                     className="note-delete"
                     onClick={() => handleDelete(note)}
                     disabled={deletingId === note.id}
-                    aria-label="Delete this note"
-                    title="Delete note"
+                    aria-label="Remove this note"
+                    title="Remove note"
                   >
-                    <TrashIcon />
+                    <DeleteIcon />
                   </button>
                 )}
               </span>
