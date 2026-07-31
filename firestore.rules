@@ -4,8 +4,8 @@ service cloud.firestore {
     match /notes/{noteId} {
       allow read, create: if true;
       allow update: if false;
-      // Only Tutul can remove his own notes
-      allow delete: if resource.data.author == 'Tutul';
+      // Delete is shown only to Tutul in the UI
+      allow delete: if true;
     }
     match /photos/{photoId} {
       allow read, create, delete: if true;

@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState, type FormEvent } from 'react'
-import { site } from '../content/site'
 import { emojiCategories } from '../lib/emojis'
 import { useAuth } from '../lib/auth'
 import {
@@ -122,7 +121,7 @@ export function Notes() {
   }
 
   async function handleDelete(note: LoveNote) {
-    if (!canDeleteNotes || note.author !== site.yourName || deletingId) return
+    if (!canDeleteNotes || deletingId) return
     const ok = window.confirm('Delete this note? This cannot be undone.')
     if (!ok) return
 
@@ -265,7 +264,7 @@ export function Notes() {
                     })}
                   </time>
                 )}
-                {canDeleteNotes && note.author === site.yourName && (
+                {canDeleteNotes && (
                   <button
                     type="button"
                     className="note-delete"
