@@ -5,6 +5,7 @@ import { Layout } from './components/Layout'
 import { PasswordGate } from './components/PasswordGate'
 import { site, type SiteUser } from './content/site'
 import { AuthContext } from './lib/auth'
+import { setPresence, startPresence } from './lib/presence'
 import {
   clearSession,
   ensureSession,
@@ -53,11 +54,12 @@ export default function App() {
   const fullyUnlocked = passwordOk && challengeOk && user !== null
 
   const logout = useCallback(() => {
+    if (user) void setPresence(user, false)
     clearSession()
     setChallengeOk(false)
     setPasswordOk(false)
     setUser(null)
-  }, [])
+  }, [user])
 
   useEffect(() => {
     document.title = fullyUnlocked
@@ -81,6 +83,11 @@ export default function App() {
 
     return () => window.clearTimeout(timer)
   }, [fullyUnlocked, logout])
+
+  useEffect(() => {
+    if (!fullyUnlocked || !user) return
+    return startPresence(user)
+  }, [fullyUnlocked, user])
 
   const handleChallengeFail = useCallback(() => {
     clearSession()

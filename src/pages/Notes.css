@@ -64,16 +64,21 @@
 
 .notes-chat-title {
   margin: 0;
-  font-size: 1.05rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--ink);
   line-height: 1.25;
 }
 
-.notes-chat-subtitle {
-  margin: 0.1rem 0 0;
-  font-size: 0.82rem;
+.notes-chat-status {
+  margin: 0.12rem 0 0;
+  font-size: 0.78rem;
   color: var(--ink-muted);
+  line-height: 1.2;
+}
+
+.notes-chat-status.is-online {
+  color: #2f8f5b;
 }
 
 .notes-list {

@@ -14,5 +14,8 @@ service cloud.firestore {
         .affectedKeys()
         .hasOnly(['liked']);
     }
+    match /presence/{userId} {
+      allow read, write: if true;
+    }
   }
 }

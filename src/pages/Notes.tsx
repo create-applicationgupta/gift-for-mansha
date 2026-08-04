@@ -8,6 +8,12 @@ import {
   isFirebaseConfigured,
   type LoveNote,
 } from '../lib/notes'
+import {
+  formatLastSeen,
+  getPartner,
+  subscribePresence,
+  type PresenceState,
+} from '../lib/presence'
 import './Notes.css'
 
 const NOTE_MAX = 600
@@ -55,6 +61,7 @@ function formatNoteStamp(date: Date) {
 
 export function Notes() {
   const { user, canDeleteNotes } = useAuth()
+  const partner = getPartner(user)
   const [notes, setNotes] = useState<LoveNote[]>([])
   const [text, setText] = useState('')
   const [heart, setHeart] = useState(true)
@@ -64,6 +71,10 @@ export function Notes() {
   const [error, setError] = useState<string | null>(null)
   const [emojiOpen, setEmojiOpen] = useState(false)
   const [emojiCategory, setEmojiCategory] = useState(0)
+  const [partnerPresence, setPartnerPresence] = useState<PresenceState>({
+    online: false,
+    lastSeen: null,
+  })
   const textRef = useRef<HTMLTextAreaElement>(null)
   const emojiWrapRef = useRef<HTMLDivElement>(null)
   const chatEndRef = useRef<HTMLDivElement>(null)
@@ -98,6 +109,10 @@ export function Notes() {
     if (loading) return
     scrollChatToBottom(notes.length > 0 ? 'smooth' : 'auto')
   }, [loading, notes.length])
+
+  useEffect(() => {
+    return subscribePresence(partner, setPartnerPresence)
+  }, [partner])
 
   useEffect(() => {
     if (!emojiOpen) return
@@ -215,11 +230,15 @@ export function Notes() {
       <section className="notes-chat animate-fade-up delay-2" aria-label="Love notes chat">
         <header className="notes-chat-header">
           <div className="notes-chat-avatar" aria-hidden="true">
-            {user.slice(0, 1)}
+            {partner.slice(0, 1)}
           </div>
           <div className="notes-chat-header-text">
-            <p className="notes-chat-title">Our chat</p>
-            <p className="notes-chat-subtitle">Writing as {user}</p>
+            <p className="notes-chat-title">{partner}</p>
+            <p
+              className={`notes-chat-status${partnerPresence.online ? ' is-online' : ''}`}
+            >
+              {formatLastSeen(partnerPresence)}
+            </p>
           </div>
         </header>
 
