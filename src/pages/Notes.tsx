@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, type FormEvent } from 'react'
+import { useEffect, useRef, useState, type FormEvent, type KeyboardEvent as ReactKeyboardEvent } from 'react'
 import { emojiCategories } from '../lib/emojis'
 import { useAuth } from '../lib/auth'
 import {
@@ -32,6 +32,27 @@ function DeleteIcon() {
   )
 }
 
+function SendIcon() {
+  return (
+    <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
+      <path
+        d="M3.4 11.2 20.1 3.7c.55-.25 1.12.3.9.86L14.4 20.5c-.22.55-.97.6-1.27.08l-2.7-4.7a.7.7 0 0 1 .08-.82l5.1-5.35-7.35 3.55a.7.7 0 0 1-.72-.1L3.3 11.9c-.5-.35-.3-1.1.1-.7Z"
+        fill="currentColor"
+      />
+    </svg>
+  )
+}
+
+function formatNoteStamp(date: Date) {
+  return date.toLocaleString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  })
+}
+
 export function Notes() {
   const { user, canDeleteNotes } = useAuth()
   const [notes, setNotes] = useState<LoveNote[]>([])
@@ -45,14 +66,23 @@ export function Notes() {
   const [emojiCategory, setEmojiCategory] = useState(0)
   const textRef = useRef<HTMLTextAreaElement>(null)
   const emojiWrapRef = useRef<HTMLDivElement>(null)
+  const chatEndRef = useRef<HTMLDivElement>(null)
   const online = isFirebaseConfigured()
+
+  function scrollChatToBottom(behavior: ScrollBehavior = 'smooth') {
+    requestAnimationFrame(() => {
+      chatEndRef.current?.scrollIntoView({ behavior, block: 'end' })
+    })
+  }
 
   useEffect(() => {
     let cancelled = false
     ;(async () => {
       try {
         const data = await fetchNotes()
-        if (!cancelled) setNotes(data)
+        if (!cancelled) {
+          setNotes([...data].reverse())
+        }
       } catch {
         if (!cancelled) setError('Could not load notes. Try again in a moment.')
       } finally {
@@ -63,6 +93,11 @@ export function Notes() {
       cancelled = true
     }
   }, [])
+
+  useEffect(() => {
+    if (loading) return
+    scrollChatToBottom(notes.length > 0 ? 'smooth' : 'auto')
+  }, [loading, notes.length])
 
   useEffect(() => {
     if (!emojiOpen) return
@@ -85,6 +120,13 @@ export function Notes() {
     }
   }, [emojiOpen])
 
+  function resizeComposer() {
+    const el = textRef.current
+    if (!el) return
+    el.style.height = 'auto'
+    el.style.height = `${Math.min(el.scrollHeight, 120)}px`
+  }
+
   function insertEmoji(emoji: string) {
     const el = textRef.current
     const start = el?.selectionStart ?? text.length
@@ -98,11 +140,12 @@ export function Notes() {
       el.focus()
       const caret = start + emoji.length
       el.setSelectionRange(caret, caret)
+      resizeComposer()
     })
   }
 
-  async function handleSubmit(e: FormEvent) {
-    e.preventDefault()
+  async function handleSubmit(e?: FormEvent) {
+    e?.preventDefault()
     const trimmed = text.trim()
     if (!trimmed || saving) return
 
@@ -111,12 +154,24 @@ export function Notes() {
     setEmojiOpen(false)
     try {
       const note = await createNote({ author: user, text: trimmed, heart })
-      setNotes((prev) => [note, ...prev])
+      setNotes((prev) => [...prev, note])
       setText('')
+      requestAnimationFrame(() => {
+        if (textRef.current) {
+          textRef.current.style.height = 'auto'
+        }
+      })
     } catch {
       setError('Could not save that note. Please try again.')
     } finally {
       setSaving(false)
+    }
+  }
+
+  function handleComposerKey(e: ReactKeyboardEvent<HTMLTextAreaElement>) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault()
+      void handleSubmit()
     }
   }
 
@@ -140,6 +195,7 @@ export function Notes() {
   }
 
   const activeEmojis = emojiCategories[emojiCategory]?.emojis ?? []
+  const canSend = Boolean(text.trim()) && !saving
 
   return (
     <div className="page notes-page">
@@ -156,139 +212,159 @@ export function Notes() {
         </p>
       )}
 
-      <form className="notes-form animate-fade-up delay-2" onSubmit={handleSubmit}>
-        <div className="notes-form-header">
-          <span className="notes-from-label">From</span>
-          <p className="notes-from-name">{user}</p>
-        </div>
-
-        <div className="notes-form-body">
-          <label className="sr-only" htmlFor="note-text">
-            Note
-          </label>
-          <div className="notes-composer">
-            <textarea
-              id="note-text"
-              ref={textRef}
-              rows={4}
-              maxLength={NOTE_MAX}
-              value={text}
-              onChange={(e) => setText(e.target.value)}
-              placeholder="Write something soft…"
-              required
-            />
-            <div className="notes-emoji-wrap" ref={emojiWrapRef}>
-              <button
-                type="button"
-                className={`notes-emoji-toggle${emojiOpen ? ' is-open' : ''}`}
-                onClick={() => setEmojiOpen((open) => !open)}
-                aria-label="Add emoji"
-                aria-expanded={emojiOpen}
-                title="Emoji"
-              >
-                😊
-              </button>
-              {emojiOpen && (
-                <div className="notes-emoji-panel" role="dialog" aria-label="Emoji picker">
-                  <div className="notes-emoji-tabs" role="tablist">
-                    {emojiCategories.map((cat, index) => (
-                      <button
-                        key={cat.id}
-                        type="button"
-                        role="tab"
-                        aria-selected={emojiCategory === index}
-                        className={`notes-emoji-tab${emojiCategory === index ? ' is-active' : ''}`}
-                        onClick={() => setEmojiCategory(index)}
-                      >
-                        {cat.label}
-                      </button>
-                    ))}
-                  </div>
-                  <div className="notes-emoji-grid">
-                    {activeEmojis.map((emoji) => (
-                      <button
-                        key={emoji}
-                        type="button"
-                        className="notes-emoji-btn"
-                        onClick={() => insertEmoji(emoji)}
-                        aria-label={`Insert ${emoji}`}
-                      >
-                        {emoji}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+      <section className="notes-chat animate-fade-up delay-2" aria-label="Love notes chat">
+        <header className="notes-chat-header">
+          <div className="notes-chat-avatar" aria-hidden="true">
+            {user.slice(0, 1)}
           </div>
-        </div>
+          <div className="notes-chat-header-text">
+            <p className="notes-chat-title">Our chat</p>
+            <p className="notes-chat-subtitle">Writing as {user}</p>
+          </div>
+        </header>
 
-        <div className="notes-actions">
-          <label className="notes-heart">
-            <input
-              type="checkbox"
-              checked={heart}
-              onChange={(e) => setHeart(e.target.checked)}
-            />
-            <span>Add a little heart</span>
-          </label>
-
-          {error && <p className="notes-error">{error}</p>}
-
-          <button className="btn" type="submit" disabled={saving || !text.trim()}>
-            {saving ? 'Sending…' : 'Leave note'}
-          </button>
-        </div>
-      </form>
-
-      <div className="notes-list" aria-live="polite">
-        {loading && <p className="notes-empty">Gathering notes…</p>}
-        {!loading && notes.length === 0 && (
-          <p className="notes-empty">No notes yet — be the first.</p>
-        )}
-        {notes.map((note, i) => {
-          const isMine = note.author === user
-          return (
-            <article
-              key={note.id}
-              className={`note-item ${isMine ? 'is-mine' : 'is-theirs'} animate-fade-up delay-${(i % 3) + 1}`}
-            >
-              <p className="note-text">{note.text}</p>
-              <footer className="note-footer">
-                <div className="note-signature">
-                  <span className="note-author">{note.author}</span>
-                  {note.heart && (
-                    <span className="note-heart-mark" aria-hidden="true">
+        <div className="notes-list" aria-live="polite">
+          {loading && <p className="notes-empty">Gathering notes…</p>}
+          {!loading && notes.length === 0 && (
+            <p className="notes-empty">No notes yet — be the first.</p>
+          )}
+          {notes.map((note) => {
+            const isMine = note.author === user
+            return (
+              <article
+                key={note.id}
+                className={`note-item ${isMine ? 'is-mine' : 'is-theirs'}`}
+              >
+                {!isMine && (
+                  <span className="note-author">
+                    {note.author}
+                    {note.heart && (
+                      <span className="note-heart-mark" aria-hidden="true">
+                        ♡
+                      </span>
+                    )}
+                  </span>
+                )}
+                <p className="note-text">{note.text}</p>
+                <footer className="note-footer">
+                  {isMine && note.heart && (
+                    <span className="note-heart-mark note-heart-inline" aria-hidden="true">
                       ♡
                     </span>
                   )}
                   {note.createdAt && (
                     <time dateTime={note.createdAt.toISOString()}>
-                      {note.createdAt.toLocaleDateString(undefined, {
-                        month: 'short',
-                        day: 'numeric',
-                        year: 'numeric',
-                      })}
+                      {formatNoteStamp(note.createdAt)}
                     </time>
                   )}
+                  {canDeleteNotes && (
+                    <button
+                      type="button"
+                      className="note-delete"
+                      onClick={() => handleDelete(note)}
+                      disabled={deletingId === note.id}
+                      aria-label="Remove this note"
+                      title="Remove note"
+                    >
+                      <DeleteIcon />
+                    </button>
+                  )}
+                </footer>
+              </article>
+            )
+          })}
+          <div ref={chatEndRef} className="notes-chat-end" aria-hidden="true" />
+        </div>
+
+        {error && <p className="notes-error">{error}</p>}
+
+        <form className="notes-composer-bar" onSubmit={handleSubmit}>
+          <div className="notes-emoji-wrap" ref={emojiWrapRef}>
+            <button
+              type="button"
+              className={`notes-emoji-toggle${emojiOpen ? ' is-open' : ''}`}
+              onClick={() => setEmojiOpen((open) => !open)}
+              aria-label="Add emoji"
+              aria-expanded={emojiOpen}
+              title="Emoji"
+            >
+              😊
+            </button>
+            {emojiOpen && (
+              <div className="notes-emoji-panel" role="dialog" aria-label="Emoji picker">
+                <div className="notes-emoji-tabs" role="tablist">
+                  {emojiCategories.map((cat, index) => (
+                    <button
+                      key={cat.id}
+                      type="button"
+                      role="tab"
+                      aria-selected={emojiCategory === index}
+                      className={`notes-emoji-tab${emojiCategory === index ? ' is-active' : ''}`}
+                      onClick={() => setEmojiCategory(index)}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
                 </div>
-                {canDeleteNotes && (
-                  <button
-                    type="button"
-                    className="note-delete"
-                    onClick={() => handleDelete(note)}
-                    disabled={deletingId === note.id}
-                    aria-label="Remove this note"
-                    title="Remove note"
-                  >
-                    <DeleteIcon />
-                  </button>
-                )}
-              </footer>
-            </article>
-          )
-        })}
-      </div>
+                <div className="notes-emoji-grid">
+                  {activeEmojis.map((emoji) => (
+                    <button
+                      key={emoji}
+                      type="button"
+                      className="notes-emoji-btn"
+                      onClick={() => insertEmoji(emoji)}
+                      aria-label={`Insert ${emoji}`}
+                    >
+                      {emoji}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
+
+          <label className="sr-only" htmlFor="note-text">
+            Message
+          </label>
+          <div className="notes-composer-field">
+            <textarea
+              id="note-text"
+              ref={textRef}
+              rows={1}
+              maxLength={NOTE_MAX}
+              value={text}
+              onChange={(e) => {
+                setText(e.target.value)
+                requestAnimationFrame(resizeComposer)
+              }}
+              onKeyDown={handleComposerKey}
+              placeholder="Type a message"
+              required
+            />
+          </div>
+
+          <button
+            type="button"
+            className={`notes-heart-toggle${heart ? ' is-on' : ''}`}
+            onClick={() => setHeart((on) => !on)}
+            aria-pressed={heart}
+            aria-label={heart ? 'Heart on' : 'Heart off'}
+            title={heart ? 'Heart on' : 'Add heart'}
+          >
+            ♡
+          </button>
+
+          <button
+            className="notes-send"
+            type="submit"
+            disabled={!canSend}
+            aria-label={saving ? 'Sending' : 'Send note'}
+            title="Send"
+          >
+            <SendIcon />
+          </button>
+        </form>
+      </section>
     </div>
   )
 }
