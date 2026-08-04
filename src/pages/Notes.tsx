@@ -229,7 +229,10 @@ export function Notes() {
 
       <section className="notes-chat animate-fade-up delay-2" aria-label="Love notes chat">
         <header className="notes-chat-header">
-          <div className="notes-chat-avatar" aria-hidden="true">
+          <div
+            className={`notes-chat-avatar${partnerPresence.online ? ' is-online' : ''}`}
+            aria-hidden="true"
+          >
             {partner.slice(0, 1)}
           </div>
           <div className="notes-chat-header-text">
@@ -362,16 +365,21 @@ export function Notes() {
             />
           </div>
 
-          <button
-            type="button"
-            className={`notes-heart-toggle${heart ? ' is-on' : ''}`}
-            onClick={() => setHeart((on) => !on)}
-            aria-pressed={heart}
-            aria-label={heart ? 'Heart on' : 'Heart off'}
-            title={heart ? 'Heart on' : 'Add heart'}
-          >
-            ♡
-          </button>
+          <div className="notes-composer-identity" title={`Writing as ${user}`}>
+            <span className="notes-composer-who" aria-label={`Writing as ${user}`}>
+              {user.slice(0, 1)}
+            </span>
+            <button
+              type="button"
+              className={`notes-heart-toggle${heart ? ' is-on' : ''}`}
+              onClick={() => setHeart((on) => !on)}
+              aria-pressed={heart}
+              aria-label={heart ? 'Heart on' : 'Heart off'}
+              title={heart ? 'Heart on' : 'Add heart'}
+            >
+              ♡
+            </button>
+          </div>
 
           <button
             className="notes-send"

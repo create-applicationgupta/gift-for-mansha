@@ -20,8 +20,11 @@ type PresenceDoc = {
   updatedAt?: Timestamp | null
 }
 
-const ONLINE_WINDOW_MS = 90_000
-const HEARTBEAT_MS = 30_000
+/** Still count as online if a heartbeat arrived within this window */
+const ONLINE_WINDOW_MS = 120_000
+const HEARTBEAT_MS = 20_000
+/** Don't drop to offline the instant a tab is backgrounded */
+const OFFLINE_DELAY_MS = 45_000
 
 export function getPartner(user: SiteUser): SiteUser {
   return user === 'Mansha' ? 'Tutul' : 'Mansha'
@@ -40,11 +43,17 @@ export async function setPresence(user: SiteUser, online: boolean): Promise<void
   try {
     await setDoc(
       ref,
-      {
-        online,
-        lastSeen: serverTimestamp(),
-        updatedAt: serverTimestamp(),
-      },
+      online
+        ? {
+            online: true,
+            lastSeen: serverTimestamp(),
+            updatedAt: serverTimestamp(),
+          }
+        : {
+            online: false,
+            // Keep lastSeen at the last active moment — only flip the flag.
+            updatedAt: serverTimestamp(),
+          },
       { merge: true },
     )
   } catch {
@@ -61,25 +70,49 @@ export function startPresence(user: SiteUser): () => void {
 
   let stopped = false
   let heartbeatId = 0
+  let offlineTimer = 0
+
+  const goOnline = () => {
+    if (stopped) return
+    window.clearTimeout(offlineTimer)
+    offlineTimer = 0
+    void setPresence(user, true)
+  }
+
+  const goOffline = (immediate = false) => {
+    window.clearTimeout(offlineTimer)
+    if (immediate) {
+      offlineTimer = 0
+      void setPresence(user, false)
+      return
+    }
+    offlineTimer = window.setTimeout(() => {
+      if (stopped) return
+      if (document.visibilityState === 'hidden') {
+        void setPresence(user, false)
+      }
+    }, OFFLINE_DELAY_MS)
+  }
 
   const beat = () => {
     if (stopped) return
-    void setPresence(user, document.visibilityState !== 'hidden')
+    if (document.visibilityState === 'hidden') return
+    void setPresence(user, true)
   }
 
-  beat()
+  goOnline()
   heartbeatId = window.setInterval(beat, HEARTBEAT_MS)
 
   function onVisibility() {
     if (document.visibilityState === 'hidden') {
-      void setPresence(user, false)
+      goOffline(false)
     } else {
-      void setPresence(user, true)
+      goOnline()
     }
   }
 
   function onPageHide() {
-    void setPresence(user, false)
+    goOffline(true)
   }
 
   document.addEventListener('visibilitychange', onVisibility)
@@ -88,10 +121,34 @@ export function startPresence(user: SiteUser): () => void {
   return () => {
     stopped = true
     window.clearInterval(heartbeatId)
+    window.clearTimeout(offlineTimer)
     document.removeEventListener('visibilitychange', onVisibility)
     window.removeEventListener('pagehide', onPageHide)
     void setPresence(user, false)
   }
+}
+
+function resolvePresence(data: PresenceDoc): PresenceState {
+  const lastSeen = data.lastSeen?.toDate?.() ?? null
+  const pulseAt = data.updatedAt?.toDate?.() ?? lastSeen
+  const recentlyActive =
+    pulseAt !== null && Date.now() - pulseAt.getTime() < ONLINE_WINDOW_MS
+
+  // online flag from heartbeat, still fresh
+  if (Boolean(data.online) && recentlyActive) {
+    return { online: true, lastSeen }
+  }
+
+  // Fresh lastSeen means they were actively heartbeating very recently
+  // (covers brief flag races while both are logged in)
+  if (
+    lastSeen !== null &&
+    Date.now() - lastSeen.getTime() < HEARTBEAT_MS * 2.5
+  ) {
+    return { online: true, lastSeen }
+  }
+
+  return { online: false, lastSeen }
 }
 
 export function subscribePresence(
@@ -104,26 +161,40 @@ export function subscribePresence(
     return () => {}
   }
 
-  return onSnapshot(
+  let latest: PresenceDoc | null = null
+
+  const emit = () => {
+    if (!latest) {
+      onChange({ online: false, lastSeen: null })
+      return
+    }
+    onChange(resolvePresence(latest))
+  }
+
+  const unsub = onSnapshot(
     ref,
     (snap) => {
       if (!snap.exists()) {
+        latest = null
         onChange({ online: false, lastSeen: null })
         return
       }
-
-      const data = snap.data() as PresenceDoc
-      const lastSeen = data.lastSeen?.toDate?.() ?? data.updatedAt?.toDate?.() ?? null
-      const recentlyActive =
-        lastSeen !== null && Date.now() - lastSeen.getTime() < ONLINE_WINDOW_MS
-      const online = Boolean(data.online) && recentlyActive
-
-      onChange({ online, lastSeen })
+      latest = snap.data() as PresenceDoc
+      emit()
     },
     () => {
+      latest = null
       onChange({ online: false, lastSeen: null })
     },
   )
+
+  // Re-evaluate online window even if Firestore doc hasn't changed
+  const tickId = window.setInterval(emit, 15_000)
+
+  return () => {
+    window.clearInterval(tickId)
+    unsub()
+  }
 }
 
 export function formatLastSeen(state: PresenceState): string {
