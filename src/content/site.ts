@@ -15,11 +15,11 @@ export const site = {
   herName: 'Mansha',
   /**
    * First-gate passwords identify who unlocked the site.
-   * `oursecret` → Mansha · `Mansha` → Tutul
+   * `oursecret` → Mansha · `Mansha@630419` → Tutul
    */
   passwords: {
     Mansha: 'oursecret',
-    Tutul: 'Mansha',
+    Tutul: 'Mansha@630419',
   },
   /** Second gate — favorite place (checked case-insensitively) */
   challengeQuestion: 'What is your favorite place?',

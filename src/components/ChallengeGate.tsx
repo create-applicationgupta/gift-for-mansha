@@ -66,7 +66,7 @@ export function ChallengeGate({ onPass, onFail }: Props) {
         <input
           id="favorite-place"
           className="gate-input"
-          type="text"
+          type="password"
           autoComplete="off"
           autoFocus
           value={value}
