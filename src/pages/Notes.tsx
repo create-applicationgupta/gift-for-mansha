@@ -95,7 +95,6 @@ export function Notes() {
   const partner = getPartner(user)
   const [notes, setNotes] = useState<LoveNote[]>([])
   const [text, setText] = useState('')
-  const [heart, setHeart] = useState(true)
   const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
   const [deletingId, setDeletingId] = useState<string | null>(null)
@@ -254,7 +253,6 @@ export function Notes() {
     setReplyingTo(null)
     setEditingId(note.id)
     setText(note.text)
-    setHeart(note.heart)
     requestAnimationFrame(() => {
       resizeComposer()
       focusComposer()
@@ -342,7 +340,7 @@ export function Notes() {
         const note = await createNote({
           author: user,
           text: trimmed,
-          heart,
+          heart: true,
           replyTo: replyingTo
             ? {
                 id: replyingTo.id,
@@ -492,16 +490,12 @@ export function Notes() {
                   }
                 }}
               >
-                {!isMine && (
-                  <span className="note-author">
-                    {note.author}
-                    {note.heart && (
-                      <span className="note-heart-mark" aria-hidden="true">
-                        ♡
-                      </span>
-                    )}
+                <span className="note-author">
+                  {note.author}
+                  <span className="note-heart-mark" aria-hidden="true">
+                    ♡
                   </span>
-                )}
+                </span>
 
                 {note.replyTo && (
                   <button
@@ -543,11 +537,6 @@ export function Notes() {
                   {isStarredByMe(note) && (
                     <span className="note-star-mark" aria-label="Starred" title="Starred">
                       ★
-                    </span>
-                  )}
-                  {isMine && note.heart && (
-                    <span className="note-heart-mark note-heart-inline" aria-hidden="true">
-                      ♡
                     </span>
                   )}
                   {note.editedAt && <span className="note-edited">edited</span>}
@@ -696,17 +685,6 @@ export function Notes() {
             <span className="notes-composer-who" aria-label={`Writing as ${user}`}>
               {user.slice(0, 1)}
             </span>
-            <button
-              type="button"
-              className={`notes-heart-toggle${heart ? ' is-on' : ''}`}
-              onClick={() => setHeart((on) => !on)}
-              aria-pressed={heart}
-              aria-label={heart ? 'Heart on' : 'Heart off'}
-              title={heart ? 'Heart on' : 'Add heart'}
-              disabled={Boolean(editingId)}
-            >
-              ♡
-            </button>
           </div>
 
           <button

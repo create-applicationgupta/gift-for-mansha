@@ -193,6 +193,11 @@
   line-height: 1.2;
 }
 
+.note-item.is-mine .note-author {
+  justify-content: flex-end;
+  width: 100%;
+}
+
 .note-text {
   margin: 0;
   color: var(--ink);
@@ -226,11 +231,6 @@
   line-height: 1;
   animation: noteHeartPulse 2.8s var(--ease-out) infinite;
   transform-origin: center;
-}
-
-.note-heart-inline {
-  font-size: 0.78rem;
-  margin-right: auto;
 }
 
 .note-delete {
@@ -462,37 +462,6 @@
   line-height: 1;
   box-shadow: 0 2px 6px rgba(183, 110, 121, 0.28);
   user-select: none;
-}
-
-.notes-heart-toggle {
-  display: grid;
-  place-items: center;
-  flex-shrink: 0;
-  width: 1.55rem;
-  height: 1.55rem;
-  margin-left: -0.15rem;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: transparent;
-  color: var(--blush-deep);
-  font-size: 1.05rem;
-  line-height: 1;
-  cursor: pointer;
-  transition:
-    color 0.2s ease,
-    transform 0.2s var(--ease-out),
-    background 0.2s ease;
-}
-
-.notes-heart-toggle:hover {
-  color: var(--blush-deep);
-  background: rgba(183, 110, 121, 0.1);
-}
-
-.notes-heart-toggle.is-on {
-  color: var(--blush-deep);
-  transform: scale(1.08);
 }
 
 .notes-send {
@@ -811,11 +780,6 @@
   margin: 0;
   color: var(--ink);
   font-size: 0.98rem;
-}
-
-.notes-heart-toggle:disabled {
-  opacity: 0.4;
-  cursor: default;
 }
 
 @keyframes noteHeartPulse {
