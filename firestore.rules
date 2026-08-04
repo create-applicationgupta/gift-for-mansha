@@ -2,10 +2,10 @@ rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
     match /notes/{noteId} {
-      allow read, create: if true;
-      allow update: if false;
-      // Delete is shown only to Tutul in the UI
-      allow delete: if true;
+      allow read, create, delete: if true;
+      allow update: if request.resource.data.diff(resource.data)
+        .affectedKeys()
+        .hasOnly(['text', 'editedAt', 'reactions', 'starredBy', 'heart']);
     }
     match /photos/{photoId} {
       allow read, create, delete: if true;

@@ -4,7 +4,7 @@ import type { SiteUser } from '../content/site'
 type AuthContextValue = {
   logout: () => void
   user: SiteUser
-  /** Only Tutul can remove his own notes */
+  /** Only Tutul can remove notes */
   canDeleteNotes: boolean
 }
 

@@ -530,6 +530,294 @@
   margin-left: 1px;
 }
 
+/* —— Reply / edit context strip —— */
+.notes-composer-context {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  flex-shrink: 0;
+  padding: 0.55rem 0.85rem 0.35rem;
+  background: rgba(255, 248, 247, 0.96);
+  border-top: 1px solid rgba(183, 110, 121, 0.12);
+}
+
+.notes-composer-context-body {
+  flex: 1;
+  min-width: 0;
+  padding-left: 0.65rem;
+  border-left: 3px solid var(--accent);
+}
+
+.notes-composer-context-label {
+  display: block;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--accent);
+  line-height: 1.2;
+}
+
+.notes-composer-context-text {
+  display: block;
+  margin-top: 0.15rem;
+  color: var(--ink-muted);
+  font-size: 0.85rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.notes-composer-context-close {
+  flex-shrink: 0;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  color: var(--ink-muted);
+  font-size: 1.35rem;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.notes-composer-context-close:hover {
+  color: var(--blush-deep);
+  background: rgba(183, 110, 121, 0.1);
+}
+
+/* —— Quoted reply inside bubble —— */
+.note-quote {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  width: 100%;
+  margin: 0 0 0.4rem;
+  padding: 0.35rem 0.5rem;
+  border: 0;
+  border-left: 3px solid var(--accent);
+  border-radius: 6px;
+  background: rgba(44, 36, 34, 0.05);
+  text-align: left;
+  cursor: pointer;
+}
+
+.note-item.is-mine .note-quote {
+  background: rgba(255, 252, 251, 0.45);
+}
+
+.note-quote-author {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.note-quote-text {
+  color: var(--ink-soft);
+  font-size: 0.82rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.note-reactions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+  margin: 0.35rem 0 0.1rem;
+}
+
+.note-reaction-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  padding: 0.12rem 0.4rem;
+  border: 1px solid rgba(183, 110, 121, 0.18);
+  border-radius: 999px;
+  background: rgba(255, 252, 251, 0.9);
+  font-size: 0.78rem;
+  line-height: 1.2;
+  cursor: pointer;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.note-reaction-chip.is-mine {
+  border-color: rgba(183, 110, 121, 0.4);
+  background: rgba(245, 224, 227, 0.95);
+}
+
+.note-reaction-chip:hover {
+  border-color: rgba(183, 110, 121, 0.45);
+}
+
+.note-star-mark {
+  margin-right: auto;
+  color: #c9a227;
+  font-size: 0.78rem;
+  line-height: 1;
+}
+
+.note-edited {
+  color: var(--ink-muted);
+  font-size: 0.68rem;
+  font-style: italic;
+}
+
+.note-item.is-flash {
+  outline: 2px solid rgba(183, 110, 121, 0.45);
+  outline-offset: 2px;
+}
+
+.note-item.is-starred {
+  box-shadow:
+    0 1px 1.5px rgba(44, 36, 34, 0.08),
+    inset 0 0 0 1px rgba(201, 162, 39, 0.18);
+}
+
+.note-react-picker {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 0.35rem);
+  z-index: 6;
+  display: flex;
+  gap: 0.15rem;
+  padding: 0.35rem 0.4rem;
+  border: 1px solid rgba(183, 110, 121, 0.16);
+  border-radius: 999px;
+  background: rgba(255, 252, 251, 0.98);
+  box-shadow: 0 10px 28px rgba(44, 36, 34, 0.14);
+  transform: translateX(-50%);
+  animation: fadeUp 0.22s var(--ease-out) both;
+}
+
+.note-item.is-mine .note-react-picker {
+  left: auto;
+  right: 0;
+  transform: none;
+}
+
+.note-item.is-theirs .note-react-picker {
+  left: 0;
+  transform: none;
+}
+
+.note-react-emoji {
+  display: grid;
+  place-items: center;
+  width: 2rem;
+  height: 2rem;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  font-size: 1.15rem;
+  cursor: pointer;
+  transition: transform 0.15s var(--ease-out), background 0.15s ease;
+}
+
+.note-react-emoji:hover {
+  background: var(--accent-soft);
+  transform: scale(1.14);
+}
+
+/* —— Context menu —— */
+.note-context-menu {
+  position: fixed;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  min-width: 10.5rem;
+  padding: 0.35rem;
+  border: 1px solid rgba(183, 110, 121, 0.16);
+  border-radius: 12px;
+  background:
+    linear-gradient(165deg, rgba(255, 252, 251, 0.98), rgba(255, 244, 242, 0.96));
+  box-shadow: 0 14px 36px rgba(44, 36, 34, 0.16);
+  animation: fadeUp 0.18s var(--ease-out) both;
+}
+
+.note-context-menu button {
+  padding: 0.55rem 0.75rem;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 0.92rem;
+  text-align: left;
+  cursor: pointer;
+}
+
+.note-context-menu button:hover {
+  background: var(--accent-soft);
+  color: var(--accent);
+}
+
+.note-context-menu button.is-danger {
+  color: var(--blush-deep);
+}
+
+.note-context-menu button.is-danger:hover {
+  background: rgba(183, 110, 121, 0.12);
+}
+
+/* —— Message info —— */
+.note-info-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: grid;
+  place-items: center;
+  padding: 1.25rem;
+  background: rgba(44, 36, 34, 0.28);
+}
+
+.note-info-sheet {
+  width: min(22rem, 100%);
+  padding: 1.25rem 1.3rem 1.15rem;
+  border-radius: 16px;
+  border: 1px solid rgba(183, 110, 121, 0.16);
+  background:
+    linear-gradient(165deg, rgba(255, 252, 251, 0.99), rgba(255, 244, 242, 0.96));
+  box-shadow: 0 18px 48px rgba(44, 36, 34, 0.18);
+  animation: fadeUp 0.25s var(--ease-out) both;
+}
+
+.note-info-sheet h2 {
+  margin: 0 0 0.9rem;
+  font-size: 1.45rem;
+  color: var(--ink);
+}
+
+.note-info-sheet dl {
+  display: flex;
+  flex-direction: column;
+  gap: 0.7rem;
+  margin: 0 0 1.1rem;
+}
+
+.note-info-sheet dl > div {
+  display: grid;
+  gap: 0.15rem;
+}
+
+.note-info-sheet dt {
+  font-size: 0.75rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--ink-muted);
+}
+
+.note-info-sheet dd {
+  margin: 0;
+  color: var(--ink);
+  font-size: 0.98rem;
+}
+
+.notes-heart-toggle:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
 @keyframes noteHeartPulse {
   0%,
   100% {
@@ -566,7 +854,8 @@
 
   .notes-send:hover:not(:disabled),
   .notes-emoji-toggle:hover,
-  .notes-emoji-toggle.is-open {
+  .notes-emoji-toggle.is-open,
+  .note-react-emoji:hover {
     transform: none;
   }
 }
